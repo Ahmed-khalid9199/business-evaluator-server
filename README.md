@@ -95,33 +95,6 @@ Django REST Framework provides a browseable API interface that allows you to vie
 
 The browseable API is only available when `DEBUG=True` (development mode) and provides an interactive way to explore and test all API endpoints without needing external tools like Postman or cURL.
 
-## Data Transformation
-
-The serializer automatically handles:
-
-- **Boolean fields**: Converts "1"/"0" strings to True/False
-  - `shareholders_working_in_business`
-  - `taking_full_market_salary`
-  - `adjust_industry_multipliers`
-  - `spoken_to_accountant`
-  - `spoken_to_broker`
-
-- **Financial fields**: Converts string numbers to Decimal
-  - `salary_adjustment`
-  - `property_market_rent_adjustment`
-  - `lower_multiplier`
-  - `upper_multiplier`
-  - `turnover`
-  - `predicted_turnover`
-  - `profit`
-  - `predicted_profit`
-  - `non_recurring_expenses`
-  - `interest_payable`
-  - `interest_receivable`
-  - `depreciation`
-  - `amortisation`
-  - `net_assets`
-
 ## Production Considerations
 
 Before deploying to production:
@@ -182,17 +155,33 @@ By default, emails are sent to the console (for development). To configure SMTP 
 
 ### Valuation Calculation
 
-The email includes a valuation estimate calculated using:
-- **Adjusted EBITDA** = Profit + Non-recurring Expenses + Depreciation + Amortisation + Interest Payable - Interest Receivable
-- **Salary Adjustment**: Added if not taking full market salary
-- **Property Rent Adjustment**: Added if property is rented
-- **EBITDA Multipliers**: Default 3x-5x, adjustable based on:
-  - Property ownership status
-  - Shareholders working in business
-  - Custom industry multipliers (if provided)
-- **Net Assets**: Added to the final valuation
+The email includes a valuation estimate calculated using the following formula:
 
-Adjust multipliers in `api/valuation_config.py` based on your business requirements.
+**Step 1: Calculate SDE (Seller's Discretionary Earnings)**
+```
+SDE = Profit + Non-recurring Expenses + Depreciation + Amortisation + Interest Payable - Interest Receivable
+```
+
+**Step 2: Apply Adjustments**
+- **Salary Adjustment**: Added to SDE if shareholders are not taking full market salary
+- **Property Rent Adjustment**: Added to SDE if the property is rented (instead of owned)
+
+**Step 3: Calculate Valuation Range**
+```
+Valuation Low  = (Adjusted SDE × Lower Multiplier) + Net Assets
+Valuation High = (Adjusted SDE × Upper Multiplier) + Net Assets
+```
+
+**Multipliers:**
+- The lower and upper multipliers are provided in the API request
+- Default range is typically 3x-5x, but can be customized per business
+- Final valuations are rounded to the nearest £1,000 for presentation
+
+**Components:**
+- **SDE** represents the true discretionary earnings available to the business owner
+- **Multipliers** reflect industry standards and business characteristics
+- **Net Assets** include the business's tangible assets (cash, property, equipment, etc.)
+
 
 ## Optional Enhancements
 
