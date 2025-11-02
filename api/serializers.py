@@ -7,9 +7,7 @@ from .models import Lead
 
 class LeadSerializer(serializers.ModelSerializer):
     """
-    Serializer for Lead model that handles data transformation:
-    - Converts "1"/"0" strings to boolean values
-    - Converts currency strings to Decimal
+    Serializer for Lead model:
     - Validates all required fields
     """
     
@@ -54,10 +52,7 @@ class LeadSerializer(serializers.ModelSerializer):
         read_only_fields = ['valuation_low', 'valuation_high', 'sde']
         extra_kwargs = {
             'shareholders_working_in_business': {'required': True},
-            'taking_full_market_salary': {'required': True},
-            'salary_adjustment': {'required': True},
             'property_own_or_rent': {'required': True},
-            'property_market_rent_adjustment': {'required': True},
             'company_sector': {'required': True},
             'adjust_industry_multipliers': {'required': True},
             'lower_multiplier': {'required': True},
@@ -79,6 +74,36 @@ class LeadSerializer(serializers.ModelSerializer):
             'company_number': {'required': True},
         }
         
+    def validate(self, data):
+        """
+        Object-level validation for conditional requirements
+        """
+        # Check if shareholders are working in the business
+        shareholders_working = data.get('shareholders_working_in_business', False)
+        
+        if shareholders_working:
+            # If shareholders are working, taking_full_market_salary is required
+            if 'taking_full_market_salary' not in data:
+                raise serializers.ValidationError({
+                    'taking_full_market_salary': 'This field is required when shareholders are working in the business.'
+                })
+            
+            # If not taking full market salary, salary_adjustment is required
+            if not data.get('taking_full_market_salary', True):
+                if not data.get('salary_adjustment'):
+                    raise serializers.ValidationError({
+                        'salary_adjustment': 'This field is required when not taking full market salary.'
+                    })
+        
+        # Validate property_market_rent_adjustment when property is rented
+        if data.get('property_own_or_rent') == 'Rent':
+            if not data.get('property_market_rent_adjustment'):
+                raise serializers.ValidationError({
+                    'property_market_rent_adjustment': 'This field is required when property is rented.'
+                })
+        
+        return data
+
     def validate_email(self, value):
         """Validate email format."""
         if not value:

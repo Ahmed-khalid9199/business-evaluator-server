@@ -8,13 +8,13 @@ class Lead(models.Model):
     # Sector Information
     company_sector = models.CharField(max_length=100)
     shareholders_working_in_business = models.BooleanField(default=False)
-    taking_full_market_salary = models.BooleanField(default=False)
-    salary_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    taking_full_market_salary = models.BooleanField(default=False, null=True, blank=True)
+    salary_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     property_own_or_rent = models.CharField(
         max_length=10, 
         choices=[('Own', 'Own'), ('Rent', 'Rent')]
     )
-    property_market_rent_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    property_market_rent_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     adjust_industry_multipliers = models.BooleanField(default=False)
     lower_multiplier = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     upper_multiplier = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
