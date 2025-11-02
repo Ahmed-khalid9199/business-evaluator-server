@@ -1,0 +1,40 @@
+#!/bin/bash
+# cURL request for testing BusinessEvaluationView endpoint
+# 
+# Usage: 
+#   - On Windows (Git Bash): bash testing\test_curl_business-evaluation.sh
+#   - On Linux/Mac: ./testing/test_curl_business-evaluation.sh
+#   - Or copy the curl command below and run it directly
+
+curl -X POST http://localhost:8000/api/business-evaluation/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shareholders_working_in_business": true,
+    "taking_full_market_salary": false,
+    "salary_adjustment": "50000.00",
+    "property_own_or_rent": "Own",
+    "property_market_rent_adjustment": "24000.00",
+    "company_sector": "Technology",
+    "adjust_industry_multipliers": true,
+    "lower_multiplier": "3.5",
+    "upper_multiplier": "5.0",
+    "purpose": "Business Sale",
+    "spoken_to_accountant": true,
+    "spoken_to_broker": false,
+    "turnover": "500000.00",
+    "predicted_turnover": "550000.00",
+    "profit": "150000.00",
+    "predicted_profit": "175000.00",
+    "interest_payable": "5000.00",
+    "interest_receivable": "2000.00",
+    "non_recurring_expenses": "10000.00",
+    "depreciation": "15000.00",
+    "amortisation": "8000.00",
+    "net_assets": "200000.00",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "phone": "+44 20 1234 5678",
+    "company_name": "Tech Solutions Ltd",
+    "company_number": "12345678"
+  }'
+

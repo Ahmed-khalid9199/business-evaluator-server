@@ -1,0 +1,42 @@
+Hello {{ lead.name }},
+
+Thank you for using the Chelsea Corporate business valuation tool. We guide businesses through sales, acquisitions, and restructuring; as well as commercial, corporate, property, and employment law matters.
+
+Your recent business valuation has provided a snapshot of your company's potential value. This estimate is a great starting point.
+
+YOUR VALUATION ESTIMATION
+
+£{{ valuation_low|floatformat:0 }} - £{{ valuation_high|floatformat:0 }}
+
+Our team is here to guide you through whatever direction your business takes next.
+
+Buying or selling?
+
+Such significant transactions can take a year or even longer to complete, instructing a lawyer early in your business transaction minimises risks and enhances negotiations for a better outcome.
+
+LEARN MORE ABOUT OUR SERVICES: {{ site_url }}/contact
+
+What happens now?
+
+- If you're selling, we will connect you with a skilled and industry-specific business broker, to help find you the right buyer.
+
+- We are on hand to discuss your business plans and explain the legal obligations involved.
+
+- On request, we can also connect you with a trusted accountant who will ensure every financial aspect is in check.
+
+If you have any questions regarding your transaction, valuation, or your business's legal needs please get in touch: {{ site_url }}/contact
+
+CONTACT US: {{ site_url }}/contact
+
+Contact Information:
+{{ contact_phone }} | {{ contact_email }} | {{ site_url }}
+
+---
+
+DISCLAIMER:
+
+The business valuation provided here is an estimate based on the information and assumptions supplied. It is not intended to be, and should not be used as, a definitive appraisal or perceived as a guaranteed market value of the business. Actual market conditions and other factors, many of which are beyond our control, can significantly impact a business's value, and therefore, the actual value of the business may be higher or lower than this estimate. We strongly recommend seeking professional advice before making any financial decisions based on this valuation. We make no warranties or guarantees, express or implied, about the accuracy, reliability, or completeness of the provided valuation. We shall not be held liable for any losses, damages, costs, or expenses, direct or indirect, arising from or related to the use or misuse of this valuation.
+
+Chelsea Corporate
+One Temple Quay, Bristol, United Kingdom, BS1 6DZ
+
