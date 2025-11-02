@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from decimal import Decimal
+
+from api.utils import calculate_valuation
 from .models import Lead
 
 
@@ -103,3 +105,17 @@ class LeadSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError("Upper multiplier must be a non-zero positive number.")
         return value
+    
+    def create(self, validated_data):
+        # Create instance without saving
+        lead = Lead(**validated_data)
+        
+        # Calculate valuation
+        valuation_data = calculate_valuation(lead)
+        lead.valuation_low = valuation_data['low']
+        lead.valuation_high = valuation_data['high']
+        lead.sde = valuation_data['sde']
+        
+        # Save once with all data
+        lead.save()
+        return lead

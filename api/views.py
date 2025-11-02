@@ -6,7 +6,6 @@ import logging
 
 from .models import Lead
 from .serializers import LeadSerializer
-from .utils import calculate_valuation
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +33,10 @@ class BusinessEvaluationView(APIView):
                 with transaction.atomic():
                     lead = serializer.save()
                     
-                    # Calculate and save valuation
-                    valuation_data = calculate_valuation(lead)
-                    lead.valuation_low = valuation_data['low']
-                    lead.valuation_high = valuation_data['high']
-                    lead.sde = valuation_data['sde']
-                    lead.save()
-                    
                     logger.info(
                         f"New lead created: ID={lead.id}, "
                         f"Name={lead.name}, Email={lead.email}, "
-                        f"Valuation: {valuation_data['low']:.0f} - {valuation_data['high']:.0f}"
+                        f"Valuation: {lead.valuation_low:.0f} - {lead.valuation_high:.0f}"
                     )
                 
                 # Return lead data with valuation

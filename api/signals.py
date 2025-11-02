@@ -42,17 +42,16 @@ def send_business_evaluation_email(sender, instance, created, **kwargs):
             'contact_phone': getattr(settings, 'CONTACT_PHONE', '0117 435 4350'),
         }
         
-        # Render email templates
+        # Render email template
         subject = f'Your Business Valuation Estimate - {instance.company_sector}'
         html_message = render_to_string('emails/business_evaluation.html', context)
-        plain_message = render_to_string('emails/business_evaluation.txt', context)
         
         # Send email
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@chelseacorporate.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
         
         send_mail(
             subject=subject,
-            message=plain_message,
+            message='',  # Empty message, HTML only
             from_email=from_email,
             recipient_list=[instance.email],
             html_message=html_message,
