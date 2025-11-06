@@ -8,11 +8,11 @@ class Lead(models.Model):
     # Sector Information
     company_sector = models.CharField(max_length=100)
     shareholders_working_in_business = models.BooleanField(default=False)
-    taking_full_market_salary = models.BooleanField(default=False, null=True, blank=True)
+    taking_salary = models.BooleanField(default=False, null=True, blank=True)
     salary_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     property_own_or_rent = models.CharField(
         max_length=10, 
-        choices=[('Own', 'Own'), ('Rent', 'Rent')]
+        choices=[('own', 'own'), ('rent', 'rent')]
     )
     property_market_rent_adjustment = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     adjust_industry_multipliers = models.BooleanField(default=False)

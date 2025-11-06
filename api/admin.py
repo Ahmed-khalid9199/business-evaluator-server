@@ -49,7 +49,7 @@ class LeadAdmin(admin.ModelAdmin):
             'fields': (
                 'company_sector',
                 'shareholders_working_in_business',
-                'taking_full_market_salary',
+                'taking_salary',
                 'salary_adjustment',
                 'property_own_or_rent',
                 'property_market_rent_adjustment',

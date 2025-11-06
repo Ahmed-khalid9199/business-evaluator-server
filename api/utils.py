@@ -11,7 +11,7 @@ def calculate_valuation(data: Lead):
     Calculate business valuation estimate based on financial data.
 
     Formula based on Chelsea Corporate Business Valuation Tool:
-    - SDE = Profit + Non-recurring Expenses + Depreciation + Amortisation + Interest Payable - Interest Receivable
+    - SDE = Profit + Non-recurring Expenses + Depreciation + Amortisation + Interest Receivable - Interest Payable
     - Adjusted for salary adjustments and property rent adjustments
     - Valuation = (SDE × Multiplier) + Net Assets
 
@@ -29,16 +29,14 @@ def calculate_valuation(data: Lead):
         + data.depreciation  # Add back depreciation
         + data.amortisation  # Add back amortisation
         + data.non_recurring_expenses  # Add back one-time expenses
-        + data.interest_payable  # Add back interest payable
-        - data.interest_receivable  # Subtract interest receivable
+        + data.interest_receivable  # Add interest receivable
+        - data.interest_payable  # Subtract back interest payable
     )
-
-    # Apply salary adjustment if not taking full market salary
-    if not data.taking_full_market_salary:
+    
+    if data.taking_salary:
         sde += data.salary_adjustment
 
-    # Apply property rent adjustment if property is rented
-    if data.property_own_or_rent == "Rent":
+    if data.property_own_or_rent == "own":
         sde += data.property_market_rent_adjustment
 
     # Calculate valuation range

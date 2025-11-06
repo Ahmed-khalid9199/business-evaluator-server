@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='lead',
-            name='taking_full_market_salary',
+            name='taking_salary',
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
     ]

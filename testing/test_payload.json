@@ -1,6 +1,6 @@
 {
   "shareholders_working_in_business": true,
-  "taking_full_market_salary": false,
+  "taking_salary": false,
   "salary_adjustment": "50000.00",
   "property_own_or_rent": "Own",
   "property_market_rent_adjustment": "24000.00",

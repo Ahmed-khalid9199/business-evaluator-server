@@ -16,7 +16,7 @@ class LeadSerializer(serializers.ModelSerializer):
         fields = [
             # Sector Information
             'shareholders_working_in_business',
-            'taking_full_market_salary',
+            'taking_salary',
             'salary_adjustment',
             'property_own_or_rent',
             'property_market_rent_adjustment',
@@ -82,24 +82,21 @@ class LeadSerializer(serializers.ModelSerializer):
         shareholders_working = data.get('shareholders_working_in_business', False)
         
         if shareholders_working:
-            # If shareholders are working, taking_full_market_salary is required
-            if 'taking_full_market_salary' not in data:
+            if 'taking_salary' not in data:
                 raise serializers.ValidationError({
-                    'taking_full_market_salary': 'This field is required when shareholders are working in the business.'
+                    'taking_salary': 'This field is required when shareholders are working in the business.'
                 })
             
-            # If not taking full market salary, salary_adjustment is required
-            if not data.get('taking_full_market_salary', True):
+            if data.get('taking_salary', True):
                 if not data.get('salary_adjustment'):
                     raise serializers.ValidationError({
-                        'salary_adjustment': 'This field is required when not taking full market salary.'
+                        'salary_adjustment': 'This field is required when taking salary.'
                     })
         
-        # Validate property_market_rent_adjustment when property is rented
-        if data.get('property_own_or_rent') == 'Rent':
+        if data.get('property_own_or_rent') == 'own':
             if not data.get('property_market_rent_adjustment'):
                 raise serializers.ValidationError({
-                    'property_market_rent_adjustment': 'This field is required when property is rented.'
+                    'property_market_rent_adjustment': 'This field is required when property is owned.'
                 })
         
         return data
@@ -112,7 +109,7 @@ class LeadSerializer(serializers.ModelSerializer):
     
     def validate_property_own_or_rent(self, value):
         """Validate property_own_or_rent choice."""
-        valid_choices = ['Own', 'Rent']
+        valid_choices = ['own', 'rent']
         if value not in valid_choices:
             raise serializers.ValidationError(
                 f"property_own_or_rent must be one of {valid_choices}."
