@@ -194,6 +194,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@example.com')
 CONTACT_EMAIL = config('CONTACT_EMAIL', default='info@chelseacorporate.com')
 CONTACT_PHONE = config('CONTACT_PHONE', default='(0) 20 3011 1373')
 SITE_URL = config('SITE_URL', default='https://chelseacorporate.com')
+BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 
 # Logging configuration
 LOGGING = {
