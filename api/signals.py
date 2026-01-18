@@ -16,25 +16,25 @@ def _send_email_async(subject, html_message, from_email, recipient_list, lead_id
     Uses SendGrid API for Render compatibility (SMTP ports are blocked).
     """
     try:
-        # Check if SendGrid API key is configured
-        sendgrid_api_key = getattr(settings, 'SENDGRID_API_KEY', None)
+        # Check if Resend API key is configured (recommended for Render)
+        resend_api_key = getattr(settings, 'MAIL_API_KEY', None)
         
-        if sendgrid_api_key:
-            # Use SendGrid API (recommended for Render)
-            from sendgrid import SendGridAPIClient
-            from sendgrid.helpers.mail import Mail, Email, To, Content
+        if resend_api_key:
+            # Use Resend API (works on Render, no domain verification needed for testing)
+            import resend
             
-            message = Mail(
-                from_email=Email(from_email),
-                to_emails=[To(email) for email in recipient_list],
-                subject=subject,
-                html_content=Content("text/html", html_message)
-            )
+            resend.api_key = resend_api_key
             
-            sg = SendGridAPIClient(sendgrid_api_key)
-            response = sg.send(message)
+            params = {
+                "from": from_email,
+                "to": recipient_list,
+                "subject": subject,
+                "html": html_message,
+            }
             
-            logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id} (SendGrid API, status: {response.status_code})")
+            response = resend.Emails.send(params)
+            
+            logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id} (Resend API, ID: {response.get('id', 'N/A')})")
         else:
             # Fallback to Django's email backend (SMTP - for local development)
             from django.core.mail import send_mail

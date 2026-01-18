@@ -181,8 +181,8 @@ REST_FRAMEWORK = {
 }
 
 # Email settings
-# SendGrid API (Recommended for Render - SMTP ports are blocked)
-SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
+# Resend API (Recommended for Render - SMTP ports are blocked, no domain verification needed for testing)
+MAIL_API_KEY = config('MAIL_API_KEY', default='')
 
 # SMTP settings (Fallback for local development)
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')

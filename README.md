@@ -135,32 +135,50 @@ When a new lead is submitted, an automatic email is sent to the user with:
 ### Email Configuration
 
 The system automatically uses the best email method based on configuration:
-- **SendGrid API**: When `SENDGRID_API_KEY` is set (recommended for production)
-- **SMTP**: When `SENDGRID_API_KEY` is not set (local development)
+- **Resend API**: When `MAIL_API_KEY` is set (recommended for production)
+- **SMTP**: When `MAIL_API_KEY` is not set (local development)
 - **Console**: Default for local development (prints to terminal)
 
 #### Production Setup (Render/Cloud Platforms)
 
-**⚠️ Important**: Most cloud platforms (including Render) block SMTP ports. Use SendGrid API instead.
+**⚠️ Important**: Most cloud platforms (including Render) block SMTP ports. Use Resend API instead.
 
-1. **Create SendGrid Account**: https://signup.sendgrid.com/ (Free: 100 emails/day)
-2. **Generate API Key**: https://app.sendgrid.com/settings/api_keys
-3. **Verify Sender**: https://app.sendgrid.com/settings/sender_auth/senders
-4. **Set Environment Variables**:
+**Quick Setup (2 minutes):**
+
+1. **Sign up for Resend**: https://resend.com/signup (Free: 100 emails/day)
+2. **Get API Key**: https://resend.com/api-keys → Create API Key
+3. **Set Environment Variables**:
    ```env
-   SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
-   DEFAULT_FROM_EMAIL=noreply@chelseacorporate.com
+   # Required
+   MAIL_API_KEY=re_your-resend-api-key-here
+   DEFAULT_FROM_EMAIL=onboarding@resend.dev
+   
+   # Optional (contact info shown in emails)
    CONTACT_EMAIL=info@chelseacorporate.com
    CONTACT_PHONE=(0) 20 3011 1373
    SITE_URL=https://chelseacorporate.com
-   BACKEND_URL=https://your-backend-url.com
+   BACKEND_URL=https://your-backend.onrender.com
    ```
 
-📖 **See `RENDER_SENDGRID_SETUP.md` for complete step-by-step instructions.**
+**Why Resend?**
+- ✅ No domain verification needed for testing (`onboarding@resend.dev` works immediately)
+- ✅ 100 emails/day free tier
+- ✅ Works perfectly on Render (uses HTTP API, not SMTP)
+- ✅ Easy setup, no configuration hassles
 
-#### Local Development (Optional SMTP)
+**For Production**: Add your own domain at https://resend.com/domains
 
-For local testing with real emails (not recommended, use console instead):
+#### Local Development
+
+By default, emails print to the console (terminal). To test with real emails locally, set `MAIL_API_KEY` in your `.env` file:
+
+```env
+# Local .env file
+MAIL_API_KEY=re_your-api-key-here
+DEFAULT_FROM_EMAIL=onboarding@resend.dev
+```
+
+Or use SMTP (Gmail, etc.):
 ```env
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.gmail.com
