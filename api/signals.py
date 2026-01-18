@@ -4,15 +4,34 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 import logging
+import threading
 
 from .models import Lead
 
 logger = logging.getLogger(__name__)
 
+def _send_email_async(subject, html_message, from_email, recipient_list, lead_id, recipient_email):
+    """
+    Send email in a separate thread to avoid blocking the main request.
+    """
+    try:
+        send_mail(
+            subject=subject,
+            message='',  # Empty message, HTML only
+            from_email=from_email,
+            recipient_list=recipient_list,
+            html_message=html_message,
+            fail_silently=False,
+        )
+        logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id}")
+    except Exception as e:
+        logger.error(f"Failed to send business evaluation email to {recipient_email}: {str(e)}", exc_info=True)
+
 @receiver(post_save, sender=Lead)
 def send_business_evaluation_email(sender, instance, created, **kwargs):
     """
     Send business evaluation email when a new lead is created.
+    Uses threading to send email asynchronously and avoid blocking the request.
     """
     if not created:
         return  # Only send email on creation, not updates
@@ -46,21 +65,19 @@ def send_business_evaluation_email(sender, instance, created, **kwargs):
         subject = f'Your Business Valuation Estimate - {instance.company_sector}'
         html_message = render_to_string('emails/business_evaluation.html', context)
         
-        # Send email
+        # Send email asynchronously in a background thread
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
         
-        send_mail(
-            subject=subject,
-            message='',  # Empty message, HTML only
-            from_email=from_email,
-            recipient_list=[instance.email],
-            html_message=html_message,
-            fail_silently=False,
+        email_thread = threading.Thread(
+            target=_send_email_async,
+            args=(subject, html_message, from_email, [instance.email], instance.id, instance.email),
+            daemon=True
         )
+        email_thread.start()
         
-        logger.info(f"Business evaluation email sent to {instance.email} for lead ID {instance.id}")
+        logger.info(f"Email queued for {instance.email} for lead ID {instance.id}")
         
     except Exception as e:
-        logger.error(f"Failed to send business evaluation email to {instance.email}: {str(e)}", exc_info=True)
+        logger.error(f"Failed to queue email for {instance.email}: {str(e)}", exc_info=True)
         # Don't raise exception to avoid breaking the lead creation
 

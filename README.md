@@ -136,14 +136,21 @@ When a new lead is submitted, an automatic email is sent to the user with:
 
 By default, emails are sent to the console (for development). To configure SMTP in production:
 
-1. Update `evaluator_server/settings.py`:
-   ```python
-   EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-   EMAIL_HOST = 'smtp.gmail.com'  # or your SMTP server
-   EMAIL_PORT = 587
-   EMAIL_USE_TLS = True
-   EMAIL_HOST_USER = 'your-email@gmail.com'
-   EMAIL_HOST_PASSWORD = 'your-password'
+1. Set environment variables in `.env` file:
+   ```env
+   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_USE_TLS=True
+   EMAIL_HOST_USER=your-email@gmail.com
+   EMAIL_HOST_PASSWORD=your-app-password
+   EMAIL_TIMEOUT=10
+   
+   DEFAULT_FROM_EMAIL=your-email@gmail.com
+   CONTACT_EMAIL=info@chelseacorporate.com
+   CONTACT_PHONE=(0) 20 3011 1373
+   SITE_URL=https://chelseacorporate.com
+   BACKEND_URL=https://your-backend-url.com
    ```
 
 2. Customize contact information in settings:
