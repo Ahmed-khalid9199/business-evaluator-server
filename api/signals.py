@@ -38,6 +38,7 @@ def send_business_evaluation_email(sender, instance, created, **kwargs):
             'valuation_high_formatted': format_currency(instance.valuation_high),
             'sde': instance.sde,
             'site_url': getattr(settings, 'SITE_URL', 'https://chelseacorporate.com'),
+            'backend_url': getattr(settings, 'BACKEND_URL', 'http://localhost:8000'),
             'contact_email': getattr(settings, 'CONTACT_EMAIL', 'info@chelseacorporate.com'),
             'contact_phone': getattr(settings, 'CONTACT_PHONE', '0117 435 4350'),
         }
