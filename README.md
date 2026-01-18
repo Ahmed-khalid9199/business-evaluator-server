@@ -134,31 +134,45 @@ When a new lead is submitted, an automatic email is sent to the user with:
 
 ### Email Configuration
 
-By default, emails are sent to the console (for development). To configure SMTP in production:
+The system automatically uses the best email method based on configuration:
+- **SendGrid API**: When `SENDGRID_API_KEY` is set (recommended for production)
+- **SMTP**: When `SENDGRID_API_KEY` is not set (local development)
+- **Console**: Default for local development (prints to terminal)
 
-1. Set environment variables in `.env` file:
+#### Production Setup (Render/Cloud Platforms)
+
+**⚠️ Important**: Most cloud platforms (including Render) block SMTP ports. Use SendGrid API instead.
+
+1. **Create SendGrid Account**: https://signup.sendgrid.com/ (Free: 100 emails/day)
+2. **Generate API Key**: https://app.sendgrid.com/settings/api_keys
+3. **Verify Sender**: https://app.sendgrid.com/settings/sender_auth/senders
+4. **Set Environment Variables**:
    ```env
-   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-   EMAIL_HOST=smtp.gmail.com
-   EMAIL_PORT=587
-   EMAIL_USE_TLS=True
-   EMAIL_HOST_USER=your-email@gmail.com
-   EMAIL_HOST_PASSWORD=your-app-password
-   EMAIL_TIMEOUT=10
-   
-   DEFAULT_FROM_EMAIL=your-email@gmail.com
+   SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
+   DEFAULT_FROM_EMAIL=noreply@chelseacorporate.com
    CONTACT_EMAIL=info@chelseacorporate.com
    CONTACT_PHONE=(0) 20 3011 1373
    SITE_URL=https://chelseacorporate.com
    BACKEND_URL=https://your-backend-url.com
    ```
 
-2. Customize contact information in settings:
-   ```python
-   CONTACT_EMAIL = 'info@chelseacorporate.com'
-   CONTACT_PHONE = '0117 435 4350'
-   SITE_URL = 'https://chelseacorporate.com'
-   ```
+📖 **See `RENDER_SENDGRID_SETUP.md` for complete step-by-step instructions.**
+
+#### Local Development (Optional SMTP)
+
+For local testing with real emails (not recommended, use console instead):
+```env
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-gmail-app-password
+EMAIL_TIMEOUT=10
+DEFAULT_FROM_EMAIL=your-email@gmail.com
+```
+
+**Note**: Emails are sent asynchronously in background threads to avoid blocking requests.
 
 ### Valuation Calculation
 

@@ -1,10 +1,10 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 import logging
 import threading
+import os
 
 from .models import Lead
 
@@ -13,17 +13,42 @@ logger = logging.getLogger(__name__)
 def _send_email_async(subject, html_message, from_email, recipient_list, lead_id, recipient_email):
     """
     Send email in a separate thread to avoid blocking the main request.
+    Uses SendGrid API for Render compatibility (SMTP ports are blocked).
     """
     try:
-        send_mail(
-            subject=subject,
-            message='',  # Empty message, HTML only
-            from_email=from_email,
-            recipient_list=recipient_list,
-            html_message=html_message,
-            fail_silently=False,
-        )
-        logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id}")
+        # Check if SendGrid API key is configured
+        sendgrid_api_key = getattr(settings, 'SENDGRID_API_KEY', None)
+        
+        if sendgrid_api_key:
+            # Use SendGrid API (recommended for Render)
+            from sendgrid import SendGridAPIClient
+            from sendgrid.helpers.mail import Mail, Email, To, Content
+            
+            message = Mail(
+                from_email=Email(from_email),
+                to_emails=[To(email) for email in recipient_list],
+                subject=subject,
+                html_content=Content("text/html", html_message)
+            )
+            
+            sg = SendGridAPIClient(sendgrid_api_key)
+            response = sg.send(message)
+            
+            logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id} (SendGrid API, status: {response.status_code})")
+        else:
+            # Fallback to Django's email backend (SMTP - for local development)
+            from django.core.mail import send_mail
+            
+            send_mail(
+                subject=subject,
+                message='',  # Empty message, HTML only
+                from_email=from_email,
+                recipient_list=recipient_list,
+                html_message=html_message,
+                fail_silently=False,
+            )
+            logger.info(f"Business evaluation email sent to {recipient_email} for lead ID {lead_id} (SMTP)")
+            
     except Exception as e:
         logger.error(f"Failed to send business evaluation email to {recipient_email}: {str(e)}", exc_info=True)
 
