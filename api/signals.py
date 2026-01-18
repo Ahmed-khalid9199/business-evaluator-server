@@ -14,8 +14,8 @@ def send_business_evaluation_email(sender, instance, created, **kwargs):
     """
     Send business evaluation email when a new lead is created.
     """
-    if not created:
-        return  # Only send email on creation, not updates
+    if not instance.is_complete:
+        return
     
     try:
         # Read valuation from database
